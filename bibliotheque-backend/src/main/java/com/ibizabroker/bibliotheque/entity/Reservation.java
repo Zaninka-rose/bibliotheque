@@ -55,6 +55,10 @@ public class Reservation {
         return livre;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setLivre(Books livre) {
         this.livre = livre;
     }
