@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Users } from '../_model/users';
 import { UsersService } from '../_service/users.service';
 
 @Component({
-  selector: 'app-registration',
-  templateUrl: './registration.component.html',
-  styleUrls: ['./registration.component.css']
+    selector: 'app-registration',
+    templateUrl: './registration.component.html',
+    styleUrls: ['./registration.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class RegistrationComponent implements OnInit {
 
@@ -15,6 +17,7 @@ export class RegistrationComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
+    this.user.role = [{ roleName: 'User' }];
   }
 
   saveUser() {

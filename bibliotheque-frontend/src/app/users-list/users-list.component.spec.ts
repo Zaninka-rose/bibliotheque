@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { UsersListComponent } from './users-list.component';
+import { UsersService } from '../_service/users.service';
+import { Router } from '@angular/router';
 
 describe('UsersListComponent', () => {
   let component: UsersListComponent;
@@ -8,7 +11,11 @@ describe('UsersListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UsersListComponent ]
+      declarations: [ UsersListComponent ],
+      providers: [
+        { provide: UsersService, useValue: { getUsersList: () => of([]) } },
+        { provide: Router, useValue: { navigate: () => {} } }
+      ]
     })
     .compileComponents();
 

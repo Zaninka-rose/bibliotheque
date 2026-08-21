@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Books } from '../_model/books';
 import { Borrow } from '../_model/borrow';
 import { BooksService } from '../_service/books.service';
@@ -6,9 +6,11 @@ import { BorrowService } from '../_service/borrow.service';
 import { UserAuthService } from '../_service/user-auth.service';
 
 @Component({
-  selector: 'app-borrow-book',
-  templateUrl: './borrow-book.component.html',
-  styleUrls: ['./borrow-book.component.css']
+    selector: 'app-borrow-book',
+    templateUrl: './borrow-book.component.html',
+    styleUrls: ['./borrow-book.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class BorrowBookComponent implements OnInit {
 

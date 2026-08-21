@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Books } from '../_model/books'
 import { BooksService } from '../_service/books.service';
 
 @Component({
-  selector: 'app-books-list',
-  templateUrl: './books-list.component.html',
-  styleUrls: ['./books-list.component.css']
+    selector: 'app-books-list',
+    templateUrl: './books-list.component.html',
+    styleUrls: ['./books-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class BooksListComponent implements OnInit {
 

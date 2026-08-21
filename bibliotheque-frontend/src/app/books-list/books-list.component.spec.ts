@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { BooksListComponent } from './books-list.component';
+import { BooksService } from '../_service/books.service';
+import { Router } from '@angular/router';
 
 describe('BooksListComponent', () => {
   let component: BooksListComponent;
@@ -8,7 +11,11 @@ describe('BooksListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BooksListComponent ]
+      declarations: [ BooksListComponent ],
+      providers: [
+        { provide: BooksService, useValue: { getBooksList: () => of([]), deleteBook: () => of({}) } },
+        { provide: Router, useValue: { navigate: () => {} } }
+      ]
     })
     .compileComponents();
 

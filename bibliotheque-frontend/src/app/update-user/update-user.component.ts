@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Users } from '../_model/users';
 import { UsersService } from '../_service/users.service';
 
 @Component({
-  selector: 'app-update-user',
-  templateUrl: './update-user.component.html',
-  styleUrls: ['./update-user.component.css']
+    selector: 'app-update-user',
+    templateUrl: './update-user.component.html',
+    styleUrls: ['./update-user.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class UpdateUserComponent implements OnInit {
 
@@ -18,6 +20,7 @@ export class UpdateUserComponent implements OnInit {
 
   ngOnInit(): void {
     this.userId = this.route.snapshot.params['userId'];
+    this.user.role = [{ roleName: 'User' }];
     this.usersService.getUserById(this.userId).subscribe(data => {
       this.user = data;
     })

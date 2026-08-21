@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Books } from '../_model/books';
 import { BooksService } from '../_service/books.service';
 
 @Component({
-  selector: 'app-update-book',
-  templateUrl: './update-book.component.html',
-  styleUrls: ['./update-book.component.css']
+    selector: 'app-update-book',
+    templateUrl: './update-book.component.html',
+    styleUrls: ['./update-book.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class UpdateBookComponent implements OnInit {
 

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BooksListComponent } from './books-list/books-list.component';
@@ -25,42 +25,36 @@ import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { BorrowBookComponent } from './borrow-book/borrow-book.component';
 import { ReturnBookComponent } from './return-book/return-book.component';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    BooksListComponent,
-    CreateBookComponent,
-    UpdateBookComponent,
-    BookDetailsComponent,
-    RegistrationComponent,
-    UsersListComponent,
-    UserDetailsComponent,
-    UpdateUserComponent,
-    LoginComponent,
-    LogoutComponent,
-    HeaderComponent,
-    HomeComponent,
-    ForbiddenComponent,
-    BorrowBookComponent,
-    ReturnBookComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    RouterModule
-  ],
-  providers: [
-    AuthGuard,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
-    UsersService,
-    BooksService
-   ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        BooksListComponent,
+        CreateBookComponent,
+        UpdateBookComponent,
+        BookDetailsComponent,
+        RegistrationComponent,
+        UsersListComponent,
+        UserDetailsComponent,
+        UpdateUserComponent,
+        LoginComponent,
+        LogoutComponent,
+        HeaderComponent,
+        HomeComponent,
+        ForbiddenComponent,
+        BorrowBookComponent,
+        ReturnBookComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        RouterModule], providers: [
+        AuthGuard,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true
+        },
+        UsersService,
+        BooksService,
+        provideHttpClient(withXhr(), withInterceptorsFromDi())
+    ] })
 export class AppModule { }
