@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: bibliotheque-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-bibliotheque}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bibliotheque"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./bibliotheque-backend
+    container_name: bibliotheque-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Le secret JWT par défaut est celui de JwtUtil.java (source unique).
+      # Surcharge possible via : export JWT_SECRET=... ; docker compose up -d
+      DB_URL: ${DB_URL:-jdbc:postgresql://postgres:5432/bibliotheque}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/8080'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

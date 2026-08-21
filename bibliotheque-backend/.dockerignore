@@ -1,0 +1,4 @@
+target/
+.mvn/
+src/test/
+*.log
