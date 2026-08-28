@@ -1,13 +1,13 @@
-<h2>User List</h2>
+<h2>Liste des utilisateurs</h2>
 <table class="table table-success table-striped">
   <thead>
     <tr>
-      <th> User ID </th>
-      <th> Name </th>
-      <th> Username </th>
-      <th> Role </th>
-      <th> View History </th>
-      <th> Edit User </th>
+      <th> ID </th>
+      <th> Nom </th>
+      <th> Nom d'utilisateur </th>
+      <th> Rôle </th>
+      <th> Historique </th>
+      <th> Modifier </th>
     </tr>
   </thead>
   <tbody>
@@ -20,12 +20,12 @@
         <td>
           @if (user.role[0].roleName === 'User') {
             <div>
-              <button (click) = "userDetails(user.userId)" class="btn btn-success"> View </button>
+              <button (click) = "userDetails(user.userId)" class="btn btn-success"> Voir </button>
             </div>
           }
         </td>
         <td>
-          <button (click) = "updateUser(user.userId)" class="btn btn-info"> Edit </button>
+          <button (click) = "updateUser(user.userId)" class="btn btn-info"> Modifier </button>
         </td>
       </tr>
     }

@@ -1,11 +1,11 @@
-<h2>List of books to be returned</h2>
+<h2>Livres à retourner</h2>
 <table class="table table-success table-striped">
   <thead>
     <tr>
-      <th> Book ID </th>
-      <th> Issue Date </th>
-      <th> Return Date </th>
-      <th> Overdue Date </th>
+      <th> ID Livre </th>
+      <th> Date d'emprunt </th>
+      <th> Date de retour </th>
+      <th> Date limite </th>
       <th> Action </th>
     </tr>
   </thead>
@@ -19,7 +19,7 @@
         <td>
           @if (b.returnDate === null) {
             <div>
-              <button (click) = "returnBook(b.borrowId)" class="btn btn-success"> Return </button>
+              <button (click) = "returnBook(b.borrowId)" class="btn btn-success"> Retourner </button>
             </div>
           }
         </td>

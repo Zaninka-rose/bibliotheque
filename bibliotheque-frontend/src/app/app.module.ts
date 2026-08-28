@@ -9,6 +9,9 @@ import { FormsModule } from '@angular/forms';
 import { UpdateBookComponent } from './update-book/update-book.component';
 import { BookDetailsComponent } from './book-details/book-details.component';
 import { RegistrationComponent } from './registration/registration.component';
+import { ReservationsComponent } from './reservations/reservations.component';
+import { ReservationListComponent } from './reservation-list/reservation-list.component';
+import { ReservationFormComponent } from './reservation-form/reservation-form.component';
 import { UsersListComponent } from './users-list/users-list.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
@@ -32,6 +35,9 @@ import { ReturnBookComponent } from './return-book/return-book.component';
         UpdateBookComponent,
         BookDetailsComponent,
         RegistrationComponent,
+        ReservationsComponent,
+        ReservationListComponent,
+        ReservationFormComponent,
         UsersListComponent,
         UserDetailsComponent,
         UpdateUserComponent,

@@ -1,16 +1,15 @@
-<h2>Borrow history of {{ book.bookName }}</h2>
+<h2>Historique d'emprunt de {{ book.bookName }}</h2>
 <table class="table table-info table-striped">
   <thead>
     <tr>
-      <th> User ID </th>
-      <th> Issue Date </th>
-      <th> Return Date </th>
+      <th> ID Utilisateur </th>
+      <th> Date d'emprunt </th>
+      <th> Date de retour </th>
     </tr>
   </thead>
   <tbody>
     @for (borrower of borrow; track borrower) {
       <tr>
-        <!-- <td> {{ getUserData(borrower.userId) }} </td> -->
         <td> {{ borrower.userId }} </td>
         <td> {{ borrower.issueDate }} </td>
         @if (borrower.returnDate != null) {
@@ -20,7 +19,7 @@
         }
         @if (borrower.returnDate === null) {
           <div>
-            <td> Book not returned yet </td>
+            <td> Pas encore retourné </td>
           </div>
         }
       </tr>

@@ -1,7 +1,7 @@
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" style="color: rgb(241, 223, 223);" href="#">Library Management System</a>
+      <a class="navbar-brand" style="color: rgb(241, 223, 223);" href="#">Système de Gestion de Bibliothèque</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -10,37 +10,43 @@
 
           <li class="nav-item">
             @if (userService.roleMatch(['Admin'])) {
-              <a routerLink="/books" routerLinkActive="active" class="nav-link">Book List</a>
+              <a routerLink="/books" routerLinkActive="active" class="nav-link">Livres</a>
             }
           </li>
 
           <li class="nav-item">
             @if (userService.roleMatch(['Admin'])) {
-              <a routerLink="/create-book" routerLinkActive="active" class="nav-link">Add Book</a>
+              <a routerLink="/create-book" routerLinkActive="active" class="nav-link">Ajouter un livre</a>
             }
           </li>
 
           <li class="nav-item">
             @if (userService.roleMatch(['Admin'])) {
-              <a routerLink="/users" routerLinkActive="active" class="nav-link">User List</a>
+              <a routerLink="/users" routerLinkActive="active" class="nav-link">Utilisateurs</a>
             }
           </li>
 
           <li class="nav-item">
             @if (userService.roleMatch(['Admin'])) {
-              <a routerLink="/register-user" routerLinkActive="active" class="nav-link">Register User</a>
+              <a routerLink="/register-user" routerLinkActive="active" class="nav-link">Inscrire un utilisateur</a>
+            }
+          </li>
+
+          <li class="nav-item">
+            @if (userService.roleMatch(['Admin'])) {
+              <a routerLink="/reservations" routerLinkActive="active" class="nav-link">Réservations</a>
             }
           </li>
 
           <li class="nav-item">
             @if (userService.roleMatch(['User'])) {
-              <a routerLink="/borrow-book" routerLinkActive="active" class="nav-link">Borrow Books</a>
+              <a routerLink="/borrow-book" routerLinkActive="active" class="nav-link">Emprunter des livres</a>
             }
           </li>
 
           <li class="nav-item">
             @if (userService.roleMatch(['User'])) {
-              <a routerLink="/return-book" routerLinkActive="active" class="nav-link">Return Books</a>
+              <a routerLink="/return-book" routerLinkActive="active" class="nav-link">Retourner des livres</a>
             }
           </li>
 
@@ -48,7 +54,7 @@
             <li class="nav-item right-text">
               <div class="nav-link disabled text-right">
                 <strong>
-                  Hey {{name}}
+                  Bienvenue {{name}}
                 </strong>
               </div>
             </li>
@@ -56,10 +62,10 @@
 
         </ul>
         @if (!isLoggedIn()) {
-          <button type="button" class="btn btn-success" routerLink="/login">Login</button>
+          <button type="button" class="btn btn-success" routerLink="/login">Connexion</button>
         }
         @if (isLoggedIn()) {
-          <button type="button" class="btn btn-danger" (click)="logout()">Logout</button>
+          <button type="button" class="btn btn-danger" (click)="logout()">Déconnexion</button>
         }
       </div>
     </div>

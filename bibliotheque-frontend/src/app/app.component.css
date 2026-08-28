@@ -1,0 +1,11 @@
+.main-content {
+  min-height: calc(100vh - 160px);
+  padding: 1.5rem 0;
+}
+
+.app-footer {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #94a3b8;
+  padding: 1rem 0;
+  font-size: 0.85rem;
+}

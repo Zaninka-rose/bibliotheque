@@ -1,0 +1,25 @@
+.reservation-list {
+  margin-bottom: 2rem;
+}
+
+.reservation-list h2 {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.82rem;
+  }
+
+  .btn-sm {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.45rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+}

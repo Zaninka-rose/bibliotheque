@@ -1,0 +1,26 @@
+.reservation-form {
+  margin-bottom: 2rem;
+  padding: 2rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.reservation-form h3 {
+  color: #1e293b;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .reservation-form {
+    padding: 1.2rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+}

@@ -1,0 +1,22 @@
+<div class="reservations-container">
+  <h2>Gestion des réservations</h2>
+
+  <!-- Section 1 & 3 : Liste avec filtres et annulation -->
+  <app-reservation-list
+    [reservations]="reservations"
+    [loading]="loading"
+    [error]="error"
+    [cancelError]="cancelError"
+    [statutFilter]="statutFilter"
+    (filterChange)="onFilterChange($event)"
+    (cancel)="onCancel($event)"
+    (retry)="onRetry()"
+    (clearCancelError)="cancelError = ''">
+  </app-reservation-list>
+
+  <hr>
+
+  <!-- Section 2 : Formulaire de création -->
+  <app-reservation-form (created)="onCreated()">
+  </app-reservation-form>
+</div>

@@ -1,12 +1,12 @@
-<h2>Book List</h2>
+<h2>Liste des livres</h2>
 <table class="table table-success table-striped">
   <thead>
     <tr>
-      <th> Book ID </th>
-      <th> Name </th>
-      <th> Author </th>
+      <th> ID </th>
+      <th> Titre </th>
+      <th> Auteur </th>
       <th> Genre </th>
-      <th> Number of copies available </th>
+      <th> Copies disponibles </th>
       <th> Actions </th>
     </tr>
   </thead>
@@ -19,9 +19,9 @@
         <td> {{ book.bookGenre }} </td>
         <td> {{ book.noOfCopies }} </td>
         <td>
-          <button (click) = "bookDetails(book.bookId)" class="btn btn-success"> View </button>
-          <button (click) = "updateBook(book.bookId)" class="btn btn-info"  style="margin-left: 10px"> Edit </button>
-          <button (click) = "deleteBook(book.bookId)" class="btn btn-danger" style="margin-left: 10px"> Delete </button>
+          <button (click) = "bookDetails(book.bookId)" class="btn btn-success"> Voir </button>
+          <button (click) = "updateBook(book.bookId)" class="btn btn-info"  style="margin-left: 10px"> Modifier </button>
+          <button (click) = "deleteBook(book.bookId)" class="btn btn-danger" style="margin-left: 10px"> Supprimer </button>
         </td>
       </tr>
     }
