@@ -38,6 +38,9 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private UsersRepository usersRepository;
 
+    @Autowired
+    private AuthenticatedUserService authenticatedUserService;
+
     // ------------------------------------------------------------------ 1
     @Override
     public ReservationResponseDTO creerReservation(ReservationCreateDTO dto) {
@@ -46,19 +49,27 @@ public class ReservationServiceImpl implements ReservationService {
         if (dto.getLivreId() == null) {
             throw new ValidationException("livreId est requis");
         }
-        if (dto.getAdherentId() == null) {
-            throw new ValidationException("adherentId est requis");
+
+        // --- RS-04 : l'identité vient du token, JAMAIS du corps de la requête ---
+        // Un ADHERENT ne peut réserver que pour lui-même, même s'il fournit
+        // l'adherentId de quelqu'un d'autre. Un BIBLIOTHECAIRE (Admin) peut
+        // réserver au nom de n'importe quel adhérent.
+        Users adherent;
+        if (authenticatedUserService.hasRole("Admin")) {
+            if (dto.getAdherentId() == null) {
+                throw new ValidationException("adherentId est requis");
+            }
+            adherent = usersRepository.findById(dto.getAdherentId().intValue())
+                    .orElseThrow(() -> new NotFoundException(
+                            "Adhérent avec id " + dto.getAdherentId() + " introuvable"));
+        } else {
+            adherent = authenticatedUserService.getCurrentUser();
         }
 
         // --- existence du livre ---
         Books livre = booksRepository.findById(dto.getLivreId().intValue())
                 .orElseThrow(() -> new NotFoundException(
                         "Livre avec id " + dto.getLivreId() + " introuvable"));
-
-        // --- existence de l'adhérent ---
-        Users adherent = usersRepository.findById(dto.getAdherentId().intValue())
-                .orElseThrow(() -> new NotFoundException(
-                        "Adhérent avec id " + dto.getAdherentId() + " introuvable"));
 
         // --- RG-01 : le livre doit être INDISPONIBLE pour qu'une réservation ait du sens ---
         if (livre.getNoOfCopies() != null && livre.getNoOfCopies() > 0) {
@@ -92,14 +103,28 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationResponseDTO> listerReservations(StatutReservation statutFiltre,
                                                            Long adherentIdFiltre) {
 
+        // --- RS-05 : un ADHERENT ne voit que ses propres réservations ---
+        Integer filtreImpose = null;
+        if (authenticatedUserService.hasRole("Admin")) {
+            // BIBLIOTHECAIRE : voit tout, filtre optionnel par adhérent
+            if (adherentIdFiltre != null) {
+                filtreImpose = adherentIdFiltre.intValue();
+            }
+        } else {
+            // ADHERENT : le filtre est imposé par le token ; tout paramètre
+            // adherentId du client est ignoré (RS-04).
+            filtreImpose = authenticatedUserService.getCurrentUserId();
+        }
+
+        final Integer filtreApplique = filtreImpose;
+
         Stream<Reservation> stream = reservationRepository.findAll().stream();
 
         if (statutFiltre != null) {
             stream = stream.filter(r -> r.getStatut() == statutFiltre);
         }
-        if (adherentIdFiltre != null) {
-            Integer adherentId = adherentIdFiltre.intValue();
-            stream = stream.filter(r -> r.getAdherent().getUserId().equals(adherentId));
+        if (filtreApplique != null) {
+            stream = stream.filter(r -> r.getAdherent().getUserId().equals(filtreApplique));
         }
 
         return stream.map(ReservationMapper::toResponse).toList();
@@ -111,6 +136,10 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponseDTO consulterReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
+
+        // --- RS-03 : un ADHERENT ne peut consulter que ses propres réservations ---
+        verifierAppartenance(reservation);
+
         return ReservationMapper.toResponse(reservation);
     }
 
@@ -119,6 +148,9 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponseDTO annulerReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
+
+        // --- RS-03 : un ADHERENT ne peut annuler que ses propres réservations ---
+        verifierAppartenance(reservation);
 
         // --- RG-05 / RG-06 : seuls EN_ATTENTE et DISPONIBLE sont annulables ---
         if (!STATUTS_ACTIFS.contains(reservation.getStatut())) {
@@ -136,5 +168,20 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
         reservationRepository.delete(reservation);
+    }
+
+    // ------------------------------------------------------------------
+    // RS-03 : l'adhérent authentifié doit être le propriétaire de la
+    // réservation. Le bibliothécaire (Admin) a accès à tout.
+    // ------------------------------------------------------------------
+    private void verifierAppartenance(Reservation reservation) {
+        if (authenticatedUserService.hasRole("Admin")) {
+            return;
+        }
+        Integer currentUserId = authenticatedUserService.getCurrentUserId();
+        if (!reservation.getAdherent().getUserId().equals(currentUserId)) {
+            throw new AccesRefuseException(
+                    "Vous n'avez pas accès à cette réservation (RS-03)");
+        }
     }
 }

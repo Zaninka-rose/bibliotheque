@@ -2,7 +2,7 @@ package com.ibizabroker.bibliotheque.configuration;
 
 import com.ibizabroker.bibliotheque.service.JwtService;
 import com.ibizabroker.bibliotheque.util.JwtUtil;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,10 +38,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwtToken = requestTokenHeader.substring(7);
             try {
                 username = jwtUtil.getUsernameFromToken(jwtToken);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
-            } catch (ExpiredJwtException e) {
-                System.out.println("JWT Token has expired");
+            } catch (JwtException | IllegalArgumentException e) {
+                // RS-01 : token expiré, malformé, signature invalide, etc.
+                // → username reste null → 401 par JwtAuthenticationEntryPoint.
+                // L'exception ne doit JAMAIS remonter en 500.
+                System.out.println("JWT invalide : " + e.getClass().getSimpleName());
             }
         } else {
             System.out.println("JWT token does not start with Bearer");

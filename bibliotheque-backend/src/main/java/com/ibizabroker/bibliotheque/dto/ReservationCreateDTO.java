@@ -7,7 +7,11 @@ public class ReservationCreateDTO {
     @NotNull(message = "livreId est requis")
     private Long livreId;
 
-    @NotNull(message = "adherentId est requis")
+    /**
+     * RS-04 : ignoré pour un ADHERENT (l'identité vient du token).
+     * Requis uniquement pour un BIBLIOTHECAIRE (Admin) qui réserve
+     * au nom d'un adhérent.
+     */
     private Long adherentId;
 
     public ReservationCreateDTO() {

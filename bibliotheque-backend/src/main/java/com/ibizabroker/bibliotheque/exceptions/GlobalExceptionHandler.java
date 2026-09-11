@@ -2,6 +2,7 @@ package com.ibizabroker.bibliotheque.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,6 +12,26 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // ---- 403 : identifié mais sans droits (RS-02 / RS-03) ----
+
+    @ExceptionHandler(AccesRefuseException.class)
+    public ResponseEntity<Map<String, String>> handleAccesRefuse(AccesRefuseException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", ex.getMessage()));
+    }
+
+    /**
+     * RS-02 : refus levé par @PreAuthorize (ex. ADHERENT sur DELETE).
+     * Sans ce handler, l'AccessDeniedException traversait le DispatcherServlet
+     * et ressortait en 401 via JwtAuthenticationEntryPoint — confusion 401/403
+     * interdite par les règles RS-01/RS-02.
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", "Accès refusé : droits insuffisants (RS-02)"));
+    }
 
     // ---- 404 : ressources introuvables ----
 

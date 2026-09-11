@@ -73,15 +73,20 @@ class ReservationControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    // RS-04 : adherentId n'est plus obligatoire dans le DTO — pour un ADHERENT
+    // l'identité vient du token. (Le 400 pour adherentId manquant ne concerne
+    // que l'Admin et est testé dans ReservationServiceImplTest.)
     @Test
-    @DisplayName("POST /api/reservations → 400 si adherentId manquant")
-    void creerReservation_adherentIdManquant_400() throws Exception {
+    @DisplayName("POST /api/reservations → 201 sans adherentId (identité du token)")
+    void creerReservation_sansAdherentId_201() throws Exception {
         ReservationCreateDTO dto = new ReservationCreateDTO(1L, null);
+        when(reservationService.creerReservation(any(ReservationCreateDTO.class)))
+                .thenReturn(responseDTO);
 
         mockMvc.perform(post("/api/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isCreated());
     }
 
     @Test
