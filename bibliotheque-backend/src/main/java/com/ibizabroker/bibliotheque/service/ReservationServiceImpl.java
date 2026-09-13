@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -25,6 +25,11 @@ public class ReservationServiceImpl implements ReservationService {
 
     private static final Set<StatutReservation> STATUTS_ACTIFS = Set.of(
             StatutReservation.EN_ATTENTE, StatutReservation.DISPONIBLE
+    );
+
+    /** Tous les statuts : sert au "pas de filtre" des listes exécutées en base. */
+    private static final Set<StatutReservation> STATUTS_ACTIFS_ET_HISTORISES = Set.of(
+            StatutReservation.values()
     );
 
     private static final long LIMITE_RESERVATIONS_ACTIVES = 3;
@@ -62,6 +67,15 @@ public class ReservationServiceImpl implements ReservationService {
             adherent = usersRepository.findById(dto.getAdherentId().intValue())
                     .orElseThrow(() -> new NotFoundException(
                             "Adhérent avec id " + dto.getAdherentId() + " introuvable"));
+            // Recommandation #4 : l'adhérent ciblé doit avoir le rôle
+            // "Adherent". Sinon on refuse (400) — on ne crée jamais une
+            // réservation au nom d'un compte bibliothécaire ou inconnu.
+            if (adherent.getRole() == null || adherent.getRole().stream()
+                    .noneMatch(r -> "Adherent".equals(r.getRoleName()))) {
+                throw new ValidationException(
+                        "L'utilisateur " + adherent.getUsername()
+                                + " n'a pas le rôle Adherent : réservation refusée");
+            }
         } else {
             adherent = authenticatedUserService.getCurrentUser();
         }
@@ -103,31 +117,34 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationResponseDTO> listerReservations(StatutReservation statutFiltre,
                                                            Long adherentIdFiltre) {
 
-        // --- RS-05 : un ADHERENT ne voit que ses propres réservations ---
-        Integer filtreImpose = null;
+        // --- RS-05 : filtrage exécuté EN BASE (plus de findAll + stream) ---
+        Collection<StatutReservation> statuts = (statutFiltre != null)
+                ? List.of(statutFiltre)
+                : STATUTS_ACTIFS_ET_HISTORISES;
+
+        List<Reservation> reservations;
         if (authenticatedUserService.hasRole("Admin")) {
-            // BIBLIOTHECAIRE : voit tout, filtre optionnel par adhérent
+            // BIBLIOTHECAIRE : tout, avec filtre adhérent optionnel
             if (adherentIdFiltre != null) {
-                filtreImpose = adherentIdFiltre.intValue();
+                reservations = (statutFiltre != null)
+                        ? reservationRepository.findByAdherentUserIdAndStatutIn(
+                                adherentIdFiltre.intValue(), statuts)
+                        : reservationRepository.findByAdherentUserId(adherentIdFiltre.intValue());
+            } else {
+                reservations = (statutFiltre != null)
+                        ? reservationRepository.findByStatutIn(statuts)
+                        : reservationRepository.findAll();
             }
         } else {
             // ADHERENT : le filtre est imposé par le token ; tout paramètre
             // adherentId du client est ignoré (RS-04).
-            filtreImpose = authenticatedUserService.getCurrentUserId();
+            Integer currentUserId = authenticatedUserService.getCurrentUserId();
+            reservations = (statutFiltre != null)
+                    ? reservationRepository.findByAdherentUserIdAndStatutIn(currentUserId, statuts)
+                    : reservationRepository.findByAdherentUserId(currentUserId);
         }
 
-        final Integer filtreApplique = filtreImpose;
-
-        Stream<Reservation> stream = reservationRepository.findAll().stream();
-
-        if (statutFiltre != null) {
-            stream = stream.filter(r -> r.getStatut() == statutFiltre);
-        }
-        if (filtreApplique != null) {
-            stream = stream.filter(r -> r.getAdherent().getUserId().equals(filtreApplique));
-        }
-
-        return stream.map(ReservationMapper::toResponse).toList();
+        return reservations.stream().map(ReservationMapper::toResponse).toList();
     }
 
     // ------------------------------------------------------------------ 3
@@ -165,6 +182,14 @@ public class ReservationServiceImpl implements ReservationService {
     // ------------------------------------------------------------------ 5
     @Override
     public void supprimerReservation(Long id) {
+        // Recommandation #1 (défense en profondeur) : contrôle de rôle refait
+        // ici, indépendamment du @PreAuthorize du contrôleur. Si un jour la
+        // règle du contrôleur est élargie/modifiée par erreur, la suppression
+        // d'une réservation par un non-bibliothécaire reste impossible.
+        if (!authenticatedUserService.hasRole("Admin")) {
+            throw new AccesRefuseException(
+                    "Suppression réservée au BIBLIOTHECAIRE (RS-02)");
+        }
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException(id));
         reservationRepository.delete(reservation);
