@@ -1,29 +1,95 @@
-<h2>Liste des livres</h2>
-<table class="table table-success table-striped">
-  <thead>
-    <tr>
-      <th> ID </th>
-      <th> Titre </th>
-      <th> Auteur </th>
-      <th> Genre </th>
-      <th> Copies disponibles </th>
-      <th> Actions </th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (book of books; track book) {
-      <tr>
-        <td> {{ book.bookId }} </td>
-        <td> {{ book.bookName }} </td>
-        <td> {{ book.bookAuthor }} </td>
-        <td> {{ book.bookGenre }} </td>
-        <td> {{ book.noOfCopies }} </td>
-        <td>
-          <button (click) = "bookDetails(book.bookId)" class="btn btn-success"> Voir </button>
-          <button (click) = "updateBook(book.bookId)" class="btn btn-info"  style="margin-left: 10px"> Modifier </button>
-          <button (click) = "deleteBook(book.bookId)" class="btn btn-danger" style="margin-left: 10px"> Supprimer </button>
-        </td>
-      </tr>
-    }
-  </tbody>
-</table>
+<div class="page-title">
+  <h2>Catalogue des livres</h2>
+</div>
+
+<!-- Toolbar recherche + filtre -->
+<div class="app-card mb-3">
+  <div class="row g-2 align-items-center">
+    <div class="col-12 col-md-7">
+      <label class="form-label visually-hidden" for="bookSearch">Rechercher un livre</label>
+      <input type="search" id="bookSearch" class="form-control"
+             [value]="search()" (input)="search.set($any($event.target).value)"
+             placeholder="🔍 Rechercher par titre, auteur ou genre...">
+    </div>
+    <div class="col-12 col-md-5 d-flex flex-wrap gap-2 align-items-center">
+      <div class="form-check form-switch ms-md-2">
+        <input class="form-check-input" type="checkbox" role="switch"
+               id="onlyAvailable" [checked]="onlyAvailable()"
+               (change)="onlyAvailable.set($any($event.target).checked)">
+        <label class="form-check-label" for="onlyAvailable">Disponibles seulement</label>
+      </div>
+      @if (connectivity.isOnline) {
+        <button type="button" class="btn btn-primary ms-auto" routerLink="/create-book">
+          ＋ Ajouter un livre
+        </button>
+      }
+    </div>
+  </div>
+</div>
+
+@if (offlineData()) {
+  <div class="alert alert-warning d-flex align-items-center gap-2">
+    <span aria-hidden="true">📦</span>
+    Affichage de la dernière version connue du catalogue (hors connexion).
+  </div>
+}
+
+@if (loading) {
+  <div class="text-center py-5">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Chargement...</span></div>
+    <p class="mt-2 text-muted-2">Chargement du catalogue...</p>
+  </div>
+}
+
+@if (errorMessage && !loading) {
+  <div class="alert alert-danger d-flex justify-content-between align-items-center gap-2">
+    <span>{{ errorMessage }}</span>
+    <button type="button" class="btn btn-outline-danger btn-sm" (click)="onRetry()">Réessayer</button>
+  </div>
+}
+
+@if (!loading && !errorMessage) {
+  @if (filtered().length > 0) {
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Auteur</th>
+            <th>Genre</th>
+            <th>Disponibilité</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (book of filtered(); track book.bookId) {
+            <tr>
+              <td data-label="Titre">
+                <strong>{{ book.bookName }}</strong>
+              </td>
+              <td data-label="Auteur">{{ book.bookAuthor }}</td>
+              <td data-label="Genre">{{ book.bookGenre }}</td>
+              <td data-label="Disponibilité">
+                @if (book.noOfCopies > 0) {
+                  <span class="statut-badge statut-HONOREE">{{ book.noOfCopies }} dispo.</span>
+                } @else {
+                  <span class="statut-badge statut-EXPIREE">Indisponible</span>
+                }
+              </td>
+              <td data-label="Actions" class="actions-cell">
+                <button (click)="bookDetails(book.bookId)" class="btn btn-outline-primary btn-sm">Voir</button>
+                <button (click)="updateBook(book.bookId)" class="btn btn-secondary btn-sm">Modifier</button>
+                <button (click)="deleteBook(book)" class="btn btn-outline-danger btn-sm">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state app-card">
+      <div class="empty-icon" aria-hidden="true">🔎</div>
+      <p>Aucun livre ne correspond à votre recherche.</p>
+    </div>
+  }
+}

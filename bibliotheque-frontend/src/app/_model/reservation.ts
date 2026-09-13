@@ -8,8 +8,3 @@ export class Reservation {
     dateExpiration: string;
     statut: string;
 }
-
-export class ReservationCreate {
-    livreId: number;
-    adherentId: number;
-}

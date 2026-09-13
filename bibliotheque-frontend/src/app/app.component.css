@@ -3,9 +3,20 @@
   padding: 1.5rem 0;
 }
 
+/* Pages sans chrome (splash, login, register) : centré, plein écran */
+.main-content-bare {
+  min-height: calc(100vh - 90px);
+  padding: 0;
+}
+
+.main-content-bare .container {
+  padding: 0;
+  max-width: 100%;
+}
+
 .app-footer {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  color: #94a3b8;
+  background: var(--bg-header);
+  color: var(--on-header-muted);
   padding: 1rem 0;
   font-size: 0.85rem;
 }

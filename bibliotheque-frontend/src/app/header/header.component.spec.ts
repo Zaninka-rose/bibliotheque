@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HeaderComponent } from './header.component';
+import { TPipe } from '../_service/i18n/t.pipe';
+import { UsersService } from '../_service/users.service';
+import { UserAuthService } from '../_service/user-auth.service';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -8,7 +11,12 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HeaderComponent ]
+      declarations: [HeaderComponent],
+      imports: [TPipe],
+      providers: [
+        { provide: UsersService, useValue: { roleMatch: () => false } },
+        { provide: UserAuthService, useValue: { getName: () => 'Test', getToken: () => null, getRoles: () => null, isLoggedIn: () => false, clear: () => {} } }
+      ]
     })
     .compileComponents();
 

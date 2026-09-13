@@ -1,73 +1,114 @@
 <header>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" style="color: rgb(241, 223, 223);" href="#">Système de Gestion de Bibliothèque</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+  <nav class="navbar navbar-expand-lg app-navbar">
+    <div class="container-fluid px-2 px-lg-3">
+      <a class="navbar-brand" routerLink="/dashboard" (click)="closeMenu()">
+        <span aria-hidden="true">📖</span>
+        <span class="d-none d-sm-inline">{{ 'Library Management System' | t }}</span>
+        <span class="d-sm-none">Biblio</span>
+      </a>
 
-          <li class="nav-item">
-            @if (userService.roleMatch(['Admin'])) {
-              <a routerLink="/books" routerLinkActive="active" class="nav-link">Livres</a>
-            }
-          </li>
-
-          <li class="nav-item">
-            @if (userService.roleMatch(['Admin'])) {
-              <a routerLink="/create-book" routerLinkActive="active" class="nav-link">Ajouter un livre</a>
-            }
-          </li>
-
-          <li class="nav-item">
-            @if (userService.roleMatch(['Admin'])) {
-              <a routerLink="/users" routerLinkActive="active" class="nav-link">Utilisateurs</a>
-            }
-          </li>
-
-          <li class="nav-item">
-            @if (userService.roleMatch(['Admin'])) {
-              <a routerLink="/register-user" routerLinkActive="active" class="nav-link">Inscrire un utilisateur</a>
-            }
-          </li>
-
-          <li class="nav-item">
-            @if (userService.roleMatch(['Admin'])) {
-              <a routerLink="/reservations" routerLinkActive="active" class="nav-link">Réservations</a>
-            }
-          </li>
-
-          <li class="nav-item">
-            @if (userService.roleMatch(['User'])) {
-              <a routerLink="/borrow-book" routerLinkActive="active" class="nav-link">Emprunter des livres</a>
-            }
-          </li>
-
-          <li class="nav-item">
-            @if (userService.roleMatch(['User'])) {
-              <a routerLink="/return-book" routerLinkActive="active" class="nav-link">Retourner des livres</a>
-            }
-          </li>
-
-          @if (isLoggedIn()) {
-            <li class="nav-item right-text">
-              <div class="nav-link disabled text-right">
-                <strong>
-                  Bienvenue {{name}}
-                </strong>
-              </div>
-            </li>
+      <!-- Actions toujours visibles : thème + langue -->
+      <div class="d-flex align-items-center gap-1 order-lg-3">
+        <button type="button"
+                class="btn btn-sm btn-outline-light"
+                (click)="toggleTheme()"
+                [attr.aria-label]="themeService.isDark ? 'Activer le thème clair' : 'Activer le thème sombre'"
+                [title]="themeService.isDark ? 'Thème clair' : 'Thème sombre'">
+          @if (themeService.isDark) {
+            ☀️
+          } @else {
+            🌙
           }
+        </button>
 
-        </ul>
-        @if (!isLoggedIn()) {
-          <button type="button" class="btn btn-success" routerLink="/login">Connexion</button>
-        }
+        <div class="btn-group" role="group" aria-label="Langue">
+          <button type="button"
+                  class="btn btn-sm"
+                  [class.btn-light]="i18n.lang === 'fr'"
+                  [class.btn-outline-light]="i18n.lang !== 'fr'"
+                  (click)="setLang('fr')">FR</button>
+          <button type="button"
+                  class="btn btn-sm"
+                  [class.btn-light]="i18n.lang === 'en'"
+                  [class.btn-outline-light]="i18n.lang !== 'en'"
+                  (click)="setLang('en')">EN</button>
+        </div>
+
+        <!-- Hamburger mobile -->
         @if (isLoggedIn()) {
-          <button type="button" class="btn btn-danger" (click)="logout()">Déconnexion</button>
+          <button class="navbar-toggler d-lg-none ms-1" type="button"
+                  (click)="toggleMenu()"
+                  [attr.aria-expanded]="menuOpen"
+                  aria-controls="mainNav"
+                  aria-label="Menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
         }
       </div>
+
+      <!-- Liens desktop -->
+      @if (isLoggedIn()) {
+        <div class="collapse navbar-collapse show d-none d-lg-flex order-lg-2" id="mainNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">📊 Dashboard</a>
+            </li>
+            @if (userService.roleMatch(['Admin'])) {
+              <li class="nav-item">
+                <a routerLink="/books" routerLinkActive="active" class="nav-link">{{ 'Books' | t }}</a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/create-book" routerLinkActive="active" class="nav-link">{{ 'Add a book' | t }}</a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/reservations" routerLinkActive="active" class="nav-link">{{ 'Reservations' | t }}</a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/users" routerLinkActive="active" class="nav-link">{{ 'Users' | t }}</a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/register-user" routerLinkActive="active" class="nav-link">{{ 'Register a user' | t }}</a>
+              </li>
+            }
+            @if (userService.roleMatch(['User'])) {
+              <li class="nav-item">
+                <a routerLink="/borrow-book" routerLinkActive="active" class="nav-link">{{ 'Borrow books' | t }}</a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/return-book" routerLinkActive="active" class="nav-link">{{ 'Return books' | t }}</a>
+              </li>
+            }
+          </ul>
+
+          <span class="nav-link disabled d-none d-xl-inline-flex">
+            <strong>{{ 'Welcome' | t }} {{ name }}</strong>
+          </span>
+          <button type="button" class="btn btn-outline-light ms-lg-2" (click)="logout()">
+            {{ 'Logout' | t }}
+          </button>
+        </div>
+      }
     </div>
   </nav>
+
+  <!-- Menu mobile déroulant -->
+  @if (isLoggedIn() && menuOpen) {
+    <div class="mobile-nav" id="mainNavMobile">
+      <a routerLink="/dashboard" routerLinkActive="active" class="mobile-nav-link" (click)="closeMenu()">📊 Dashboard</a>
+      @if (userService.roleMatch(['Admin'])) {
+        <a routerLink="/books" routerLinkActive="active" class="mobile-nav-link" (click)="closeMenu()">📚 {{ 'Books' | t }}</a>
+        <a routerLink="/create-book" routerLinkActive="active" class="mobile-nav-link" (click)="closeMenu()">➕ {{ 'Add a book' | t }}</a>
+        <a routerLink="/reservations" routerLinkActive="active" class="mobile-nav-link" (click)="closeMenu()">⏳ {{ 'Reservations' | t }}</a>
+        <a routerLink="/users" routerLinkActive="active" class="mobile-nav-link" (click)="closeMenu()">👥 {{ 'Users' | t }}</a>
+        <a routerLink="/register-user" routerLinkActive="active" class="mobile-nav-link" (click)="closeMenu()">🧾 {{ 'Register a user' | t }}</a>
+      }
+      @if (userService.roleMatch(['User'])) {
+        <a routerLink="/borrow-book" routerLinkActive="active" class="mobile-nav-link" (click)="closeMenu()">📚 {{ 'Borrow books' | t }}</a>
+        <a routerLink="/return-book" routerLinkActive="active" class="mobile-nav-link" (click)="closeMenu()">↩️ {{ 'Return books' | t }}</a>
+      }
+      <button type="button" class="mobile-nav-link text-start" (click)="logout()">
+        🚪 {{ 'Logout' | t }}
+      </button>
+    </div>
+  }
 </header>

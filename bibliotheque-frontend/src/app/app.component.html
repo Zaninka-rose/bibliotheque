@@ -1,11 +1,28 @@
-<app-header></app-header>
-<main class="main-content">
+<!-- Bannière hors-ligne (au-dessus de tout le reste) -->
+@if (!connectivity.isOnline) {
+  <div class="offline-banner" role="status">
+    <span aria-hidden="true">⚠️</span>
+    <span>Vous êtes hors connexion — les données affichées peuvent être obsolètes.</span>
+  </div>
+}
+
+@if (!isBarePage) {
+  <app-header></app-header>
+}
+
+<main class="main-content" [class.main-content-bare]="isBarePage">
   <div class="container">
     <router-outlet></router-outlet>
   </div>
 </main>
-<footer class="app-footer">
-  <div class="container text-center">
-    <p class="mb-0">&copy; 2026 Système de Gestion de Bibliothèque</p>
-  </div>
-</footer>
+
+@if (!isBarePage) {
+  <footer class="app-footer">
+    <div class="container text-center">
+      <p class="mb-0">&copy; 2026 Système de Gestion de Bibliothèque</p>
+    </div>
+  </footer>
+}
+
+<!-- Onboarding global (s'affiche par-dessus, une seule fois) -->
+<app-onboarding></app-onboarding>

@@ -1,29 +1,59 @@
-<h2>Livres à retourner</h2>
-<table class="table table-success table-striped">
-  <thead>
-    <tr>
-      <th> ID Livre </th>
-      <th> Date d'emprunt </th>
-      <th> Date de retour </th>
-      <th> Date limite </th>
-      <th> Action </th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (b of borrow; track b) {
-      <tr>
-        <td> {{ b.bookId }} </td>
-        <td> {{ b.issueDate }} </td>
-        <td> {{ b.returnDate }} </td>
-        <td> {{ b.dueDate }} </td>
-        <td>
-          @if (b.returnDate === null) {
-            <div>
-              <button (click) = "returnBook(b.borrowId)" class="btn btn-success"> Retourner </button>
-            </div>
-          }
-        </td>
-      </tr>
-    }
-  </tbody>
-</table>
+<div class="page-title">
+  <h2>Livres à retourner</h2>
+</div>
+
+@if (feedback) {
+  <div class="alert alert-success" role="status">{{ feedback }}</div>
+}
+@if (feedbackError) {
+  <div class="alert alert-danger" role="alert">{{ feedbackError }}</div>
+}
+
+@if (loading) {
+  <div class="text-center py-5">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Chargement...</span></div>
+    <p class="mt-2 text-muted-2">Chargement de vos emprunts...</p>
+  </div>
+}
+
+@if (!loading && borrow?.length) {
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Livre</th>
+          <th>Date d'emprunt</th>
+          <th>Date de retour</th>
+          <th>Date limite</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (b of borrow; track b.borrowId) {
+          <tr>
+            <td data-label="Livre"><strong>#{{ b.bookId }}</strong></td>
+            <td data-label="Emprunté le">{{ b.issueDate }}</td>
+            <td data-label="Retourné le">
+              @if (b.returnDate === null) {
+                <span class="statut-badge statut-EN_ATTENTE">En cours</span>
+              } @else {
+                {{ b.returnDate }}
+              }
+            </td>
+            <td data-label="Date limite">{{ b.dueDate }}</td>
+            <td data-label="Action">
+              @if (b.returnDate === null) {
+                <button (click)="returnBook(b.borrowId)" class="btn btn-primary btn-sm">Retourner</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else if (!loading) {
+  <div class="empty-state app-card">
+    <div class="empty-icon" aria-hidden="true">📚</div>
+    <p>Aucun emprunt à retourner.</p>
+  </div>
+}

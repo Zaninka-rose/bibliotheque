@@ -1,14 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>BibliothequeFrontend</title>
+  <title>Bibliothèque — Système de Gestion</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Catalogue, emprunts et réservations de votre bibliothèque, même hors connexion.">
+  <meta name="theme-color" content="#7c2d3e">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    // Applique le thème AVANT le premier rendu (anti-flash blanc/sombre).
+    // Le ThemeService prendra le relais au démarrage d'Angular.
+    (function () {
+      try {
+        var theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        document.documentElement.style.colorScheme = theme;
+      } catch (e) { /* stockage indisponible : thème par défaut */ }
+    })();
+  </script>
 </head>
-<body style="background-color: #1a1a1b; color: white;">
+<body>
   <app-root></app-root>
+  <noscript>Veuillez activer JavaScript pour utiliser cette application.</noscript>
 </body>
 </html>

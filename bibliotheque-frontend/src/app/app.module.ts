@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http'
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BooksListComponent } from './books-list/books-list.component';
@@ -18,15 +20,16 @@ import { UpdateUserComponent } from './update-user/update-user.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { HeaderComponent } from './header/header.component';
-import { HomeComponent } from './home/home.component';
-import { BooksService } from './_service/books.service';
-import { UsersService } from './_service/users.service';
-import { RouterModule } from '@angular/router';
-import { AuthGuard } from './_auth/auth.guard';
-import { AuthInterceptor } from './_auth/auth.interceptor';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { BorrowBookComponent } from './borrow-book/borrow-book.component';
 import { ReturnBookComponent } from './return-book/return-book.component';
+import { OnboardingComponent } from './onboarding/onboarding.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { TPipe } from './_service/i18n/t.pipe';
+import { AuthGuard } from './_auth/auth.guard';
+import { AuthInterceptor } from './_auth/auth.interceptor';
+import { BooksService } from './_service/books.service';
+import { UsersService } from './_service/users.service';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -41,18 +44,20 @@ import { ReturnBookComponent } from './return-book/return-book.component';
         UsersListComponent,
         UserDetailsComponent,
         UpdateUserComponent,
-        LoginComponent,
         LogoutComponent,
         HeaderComponent,
-        HomeComponent,
         ForbiddenComponent,
         BorrowBookComponent,
         ReturnBookComponent,
+        OnboardingComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
         FormsModule,
-        RouterModule], providers: [
+        TPipe,
+        DashboardComponent,
+        // PWA : le service worker ne s'enregistre qu'en production.
+        ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })], providers: [
         AuthGuard,
         {
             provide: HTTP_INTERCEPTORS,

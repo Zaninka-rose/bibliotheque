@@ -1,5 +1,4 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { Observable } from 'rxjs';
 import { Books } from '../_model/books';
 import { Borrow } from '../_model/borrow';
 import { BooksService } from '../_service/books.service';
@@ -17,6 +16,9 @@ export class ReturnBookComponent implements OnInit {
 
   books: Books[];
   borrow: Borrow[];
+  loading = false;
+  feedback = '';
+  feedbackError = '';
 
   constructor(
     private borrowService: BorrowService,
@@ -32,25 +34,33 @@ export class ReturnBookComponent implements OnInit {
   }
 
   private getBooks() {
-    this.booksService.getBooksList().subscribe(data =>{
+    this.booksService.getBooksList().subscribe(data => {
       this.books = data;
     });
   }
 
-  
+
   private getBooksByUser() {
+    this.loading = true;
     this.borrowService.getBooksBorrowedByUser(this.userId).subscribe(data => {
       this.borrow = data;
-    })
+      this.loading = false;
+    }, () => {
+      this.loading = false;
+    });
   }
 
   brw: Borrow = new Borrow();
   public returnBook(borrowId: number) {
+    this.feedback = '';
+    this.feedbackError = '';
     this.brw.borrowId = borrowId;
-    this.borrowService.returnBook(this.brw).subscribe(data => {
-      console.log(data);
+    this.borrowService.returnBook(this.brw).subscribe(() => {
+      this.feedback = 'Retour enregistré. Merci !';
+      this.getBooksByUser();
     },
-    error => console.log(error));
+    () => {
+      this.feedbackError = 'Le retour n\'a pas pu être enregistré. Réessayez.';
+    });
   }
-
 }

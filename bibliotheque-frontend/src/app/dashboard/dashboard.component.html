@@ -1,0 +1,228 @@
+<div class="page-title">
+  <div>
+    <h2>Bonjour, {{ displayName }} 👋</h2>
+    <div class="page-subtitle mb-0">
+      @if (isAdmin) {
+        Vue d'ensemble de la bibliothèque — réservations, emprunts et fonds.
+      } @else {
+        Voici vos emprunts et réservations en un coup d'œil.
+      }
+    </div>
+  </div>
+  @if (offlineData) {
+    <span class="statut-badge statut-ANNULEE">📦 Données en cache (hors connexion)</span>
+  }
+</div>
+
+@if (loading) {
+  <div class="text-center py-5">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Chargement...</span></div>
+    <p class="mt-2 text-muted-2">Chargement du tableau de bord...</p>
+  </div>
+}
+
+@if (!loading && errorMessage) {
+  <div class="alert alert-danger d-flex justify-content-between align-items-center gap-2">
+    <span>{{ errorMessage }}</span>
+    <button type="button" class="btn btn-outline-danger btn-sm" (click)="retry()">Réessayer</button>
+  </div>
+}
+
+@if (!loading) {
+  <!-- ==================== Rangée 1 : KPI + graphiques ==================== -->
+  <div class="row g-3 mb-3">
+    <!-- KPI principal (gauche, style mockup) -->
+    <div class="col-12 col-lg-5">
+      <div class="app-card dash-kpi-card h-100">
+        <div class="dash-kpi-label">{{ heroKpi().label }}</div>
+        <div class="dash-kpi-value">
+          <span class="dash-kpi-icon" aria-hidden="true">{{ heroKpi().icon }}</span>
+          {{ heroKpi().value }}
+        </div>
+        <div class="dash-kpi-sub">{{ heroKpi().sub }}</div>
+
+        <!-- Sparkline / donut selon le rôle -->
+        @if (isAdmin) {
+          <svg class="dash-spark" viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true">
+            <polyline [attr.points]="sparklinePoints()" fill="none"
+                      stroke="var(--primary)" stroke-width="1.6"
+                      stroke-linejoin="round" stroke-linecap="round"/>
+            <polyline [attr.points]="sparkAreaPoints()" fill="var(--primary-soft)" stroke="none"/>
+          </svg>
+        } @else {
+          <svg class="dash-donut dash-donut-sm" viewBox="0 0 42 42" role="img"
+               [attr.aria-label]="'Répartition de vos réservations'">
+            @for (seg of statutStats().segments; track seg.statut) {
+              <circle class="dash-donut-seg" cx="21" cy="21" r="15.9"
+                      fill="none" [attr.stroke]="seg.color"
+                      stroke-width="6"
+                      [attr.stroke-dasharray]="(seg.fraction * 100) - 100"
+                      [attr.stroke-dashoffset]="25 - seg.offset * 100"/>
+            }
+            <text x="21" y="24" text-anchor="middle" class="dash-donut-center">
+              {{ statutStats().total }}
+            </text>
+          </svg>
+        }
+      </div>
+    </div>
+
+    <!-- Tableau des statuts (droite) -->
+    <div class="col-12 col-lg-7">
+      <div class="app-card h-100">
+        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+          <h3 class="dash-section-title mb-0">
+            {{ isAdmin ? 'Dernières réservations' : 'Mes réservations' }}
+          </h3>
+          <a [routerLink]="isAdmin ? ['/reservations'] : ['/borrow-book']" class="dash-link">
+            Tout voir →
+          </a>
+          </div>
+        @if (reservationsTable().length) {
+          <div class="table-responsive dash-table-scroll">
+            <table class="data-table data-table-compact">
+              <thead>
+                <tr>
+                  <th>Livre</th>
+                  @if (isAdmin) { <th>Adhérent</th> }
+                  <th>Statut</th>
+                  <th>Expire le</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of reservationsTable(); track r.id) {
+                  <tr>
+                    <td data-label="Livre">{{ r.livreTitre }}</td>
+                    @if (isAdmin) { <td data-label="Adhérent">{{ r.adherentNom }}</td> }
+                    <td data-label="Statut">
+                      <span class="statut-badge" [class]="'statut-badge statut-' + r.statut">{{ r.statut }}</span>
+                    </td>
+                    <td data-label="Expire le">{{ r.dateExpiration | date:'dd/MM' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-state py-4">
+            <div class="empty-icon" aria-hidden="true">⏳</div>
+            <p>Aucune réservation pour le moment.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Rangée 2 : tuiles dégradées ==================== -->
+  <div class="dash-tiles mb-3">
+    @if (isAdmin) {
+      <div class="dash-tile dash-tile-bordeaux">
+        <div class="dash-tile-label">Réservations actives</div>
+        <div class="dash-tile-value">{{ activeReservations().length }}</div>
+        <a routerLink="/reservations" class="dash-tile-cta">Gérer →</a>
+      </div>
+      <div class="dash-tile dash-tile-violet">
+        <div class="dash-tile-label">Emprunts en cours</div>
+        <div class="dash-tile-value">{{ activeBorrows().length }}</div>
+        <span class="dash-tile-cta">{{ lateBorrows().length }} en retard</span>
+      </div>
+      <div class="dash-tile dash-tile-bleu">
+        <div class="dash-tile-label">Livres indisponibles</div>
+        <div class="dash-tile-value">{{ unavailableBooks().length }}</div>
+        <a routerLink="/books" class="dash-tile-cta">Catalogue →</a>
+      </div>
+      <div class="dash-tile dash-tile-orange">
+        <div class="dash-tile-label">Titres au catalogue</div>
+        <div class="dash-tile-value">{{ books.length }}</div>
+        <a routerLink="/create-book" class="dash-tile-cta">Ajouter →</a>
+      </div>
+    } @else {
+      <div class="dash-tile dash-tile-bordeaux">
+        <div class="dash-tile-label">Emprunts en cours</div>
+        <div class="dash-tile-value">{{ activeBorrows().length }}</div>
+        <a routerLink="/return-book" class="dash-tile-cta">Retourner →</a>
+      </div>
+      <div class="dash-tile dash-tile-violet">
+        <div class="dash-tile-label">Réservations actives</div>
+        <div class="dash-tile-value">{{ activeReservations().length }}</div>
+        <a routerLink="/borrow-book" class="dash-tile-cta">Réserver →</a>
+      </div>
+      <div class="dash-tile dash-tile-bleu">
+        <div class="dash-tile-label">En retard</div>
+        <div class="dash-tile-value">{{ lateBorrows().length }}</div>
+        <span class="dash-tile-cta">À rendre vite</span>
+      </div>
+      <div class="dash-tile dash-tile-orange">
+        <div class="dash-tile-label">Catalogue</div>
+        <div class="dash-tile-value">{{ books.length }}</div>
+        <a routerLink="/borrow-book" class="dash-tile-cta">Explorer →</a>
+      </div>
+    }
+  </div>
+
+  <!-- ==================== Rangée 3 : activité + donut ==================== -->
+  <div class="row g-3">
+    <div class="col-12 col-lg-7">
+      <div class="app-card h-100">
+        <h3 class="dash-section-title">Activité récente</h3>
+        @if (activity().length) {
+          <ul class="dash-activity list-unstyled mb-0">
+            @for (item of activity(); track $index) {
+              <li class="dash-activity-item">
+                <span class="dash-activity-icon" aria-hidden="true">{{ item.icon }}</span>
+                <div class="flex-grow-1">
+                  <div class="dash-activity-label">{{ item.label }}</div>
+                  <div class="dash-activity-detail">{{ item.detail }}</div>
+                </div>
+                <span class="dash-activity-when">
+                  {{ item.when ? (item.when | date:'dd/MM HH:mm') : '—' }}
+                </span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <div class="empty-state py-4">
+            <div class="empty-icon" aria-hidden="true">🌙</div>
+            <p>Rien de neuf ces derniers temps.</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="app-card h-100">
+        <h3 class="dash-section-title">Statuts des réservations</h3>
+        @if (statutStats().total > 0) {
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <svg class="dash-donut" viewBox="0 0 42 42" role="img"
+                 [attr.aria-label]="'Répartition des statuts de réservation'">
+              @for (seg of statutStats().segments; track seg.statut) {
+                <circle class="dash-donut-seg" cx="21" cy="21" r="15.9"
+                        fill="none" [attr.stroke]="seg.color"
+                        stroke-width="6"
+                        [attr.stroke-dasharray]="(seg.fraction * 100) - 100"
+                        [attr.stroke-dashoffset]="25 - seg.offset * 100"/>
+              }
+              <text x="21" y="24" text-anchor="middle" class="dash-donut-center">
+                {{ statutStats().total }}
+              </text>
+            </svg>
+            <ul class="dash-legend list-unstyled mb-0">
+              @for (seg of statutStats().segments; track seg.statut) {
+                <li>
+                  <span class="dash-legend-dot" [style.background]="seg.color"></span>
+                  {{ seg.statut }} <strong>{{ seg.value }}</strong>
+                </li>
+              }
+            </ul>
+          </div>
+        } @else {
+          <div class="empty-state py-4">
+            <div class="empty-icon" aria-hidden="true">📊</div>
+            <p>Pas encore de données à visualiser.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

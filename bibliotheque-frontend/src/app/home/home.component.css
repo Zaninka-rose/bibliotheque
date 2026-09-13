@@ -1,4 +1,2 @@
-.home {
-    margin-top: 200px;
-    font-size: 80px;
-}
+/* Les styles du splash vivent dans styles.css
+   (.splash-hero, .splash-logo, .splash-features, ...). */

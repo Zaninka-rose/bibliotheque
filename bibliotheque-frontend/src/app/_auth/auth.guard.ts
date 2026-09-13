@@ -31,6 +31,10 @@ export class AuthGuard implements CanActivate {
           return false;
         }
       }
+
+      // Utilisateur authentifié et route sans restriction de rôle :
+      // accès autorisé (ex. /dashboard).
+      return true;
     }
 
     this.router.navigate(['/login']);

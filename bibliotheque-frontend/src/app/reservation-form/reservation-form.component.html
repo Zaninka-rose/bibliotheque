@@ -5,7 +5,7 @@
   @if (successMessage) {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
       {{ successMessage }}
-      <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+      <button type="button" class="btn-close" (click)="successMessage = ''" aria-label="Fermer"></button>
     </div>
   }
 
@@ -13,7 +13,14 @@
   @if (errorMessage) {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
       {{ errorMessage }}
-      <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+      <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Fermer"></button>
+    </div>
+  }
+
+  @if (!connectivity.isOnline) {
+    <div class="alert alert-warning d-flex align-items-center gap-2" role="status">
+      <span aria-hidden="true">⚠️</span>
+      <span>Vous êtes hors connexion : la création d'une réservation nécessite une connexion Internet. Reconnectez-vous puis réessayez.</span>
     </div>
   }
 
@@ -43,10 +50,10 @@
     </div>
 
     <div class="mt-3">
-      <button type="submit" class="btn btn-success"
-              [disabled]="!isFormValid || loading">
+      <button type="submit" class="btn btn-primary"
+              [disabled]="submitDisabled">
         @if (loading) {
-          <span class="spinner-border spinner-border-sm me-1"></span>
+          <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
         }
         Créer la réservation
       </button>

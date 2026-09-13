@@ -1,27 +1,117 @@
-<h2>Livres disponibles à l'emprunt</h2>
-<table class="table table-success table-striped">
-  <thead>
-    <tr>
-      <th> ID </th>
-      <th> Titre </th>
-      <th> Auteur </th>
-      <th> Genre </th>
-      <th> Copies disponibles </th>
-      <th> Actions </th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (book of books; track book) {
-      <tr>
-        <td> {{ book.bookId }} </td>
-        <td> {{ book.bookName }} </td>
-        <td> {{ book.bookAuthor }} </td>
-        <td> {{ book.bookGenre }} </td>
-        <td> {{ book.noOfCopies }} </td>
-        <td>
-          <button (click) = "borrowBook(book.bookId)" class="btn btn-success"> Emprunter </button>
-        </td>
-      </tr>
+<div class="page-title">
+  <h2>Livres à l'emprunt</h2>
+</div>
+
+<div class="page-subtitle">
+  Empruntez un livre disponible ou réservez un livre actuellement emprunté.
+</div>
+
+<!-- Toolbar recherche + filtre -->
+<div class="app-card mb-3">
+  <div class="row g-2 align-items-center">
+    <div class="col-12 col-md-8">
+      <label class="form-label visually-hidden" for="borrowSearch">Rechercher un livre</label>
+      <input type="search" id="borrowSearch" class="form-control"
+             [value]="search()" (input)="search.set($any($event.target).value)"
+             placeholder="🔍 Rechercher par titre, auteur ou genre...">
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch"
+               id="borrowOnlyAvailable" [checked]="onlyAvailable()"
+               (change)="onlyAvailable.set($any($event.target).checked)">
+        <label class="form-check-label" for="borrowOnlyAvailable">Disponibles seulement</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (offlineData()) {
+  <div class="alert alert-warning d-flex align-items-center gap-2">
+    <span aria-hidden="true">📦</span>
+    Affichage de la dernière version connue du catalogue (hors connexion).
+  </div>
+}
+
+@if (feedback) {
+  <div class="alert alert-success" role="status">{{ feedback }}</div>
+}
+@if (feedbackError) {
+  <div class="alert alert-danger" role="alert">{{ feedbackError }}</div>
+}
+
+@if (loading) {
+  <div class="text-center py-5">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Chargement...</span></div>
+    <p class="mt-2 text-muted-2">Chargement du catalogue...</p>
+  </div>
+}
+
+@if (errorMessage && !loading) {
+  <div class="alert alert-danger d-flex justify-content-between align-items-center gap-2">
+    <span>{{ errorMessage }}</span>
+    <button type="button" class="btn btn-outline-danger btn-sm" (click)="onRetry()">Réessayer</button>
+  </div>
+}
+
+@if (!loading && !errorMessage) {
+  @if (filtered().length > 0) {
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Auteur</th>
+            <th>Genre</th>
+            <th>Disponibilité</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (book of filtered(); track book.bookId) {
+            <tr>
+              <td data-label="Titre"><strong>{{ book.bookName }}</strong></td>
+              <td data-label="Auteur">{{ book.bookAuthor }}</td>
+              <td data-label="Genre">{{ book.bookGenre }}</td>
+              <td data-label="Disponibilité">
+                @if (book.noOfCopies > 0) {
+                  <span class="statut-badge statut-HONOREE">{{ book.noOfCopies }} dispo.</span>
+                } @else {
+                  <span class="statut-badge statut-EXPIREE">Indisponible</span>
+                }
+              </td>
+              <td data-label="Actions" class="actions-cell">
+                @if (book.noOfCopies > 0) {
+                  <button class="btn btn-primary btn-sm"
+                          [disabled]="!connectivity.isOnline"
+                          (click)="borrowBook(book)">
+                    Emprunter
+                  </button>
+                } @else {
+                  <button class="btn btn-outline-primary btn-sm"
+                          [disabled]="!connectivity.isOnline"
+                          (click)="reserveBook(book)"
+                          [title]="connectivity.isOnline ? '' : 'Réservation impossible hors connexion'">
+                    Réserver
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (!connectivity.isOnline) {
+      <div class="alert alert-warning mt-3" role="status">
+        <span aria-hidden="true">⚠️</span>
+        Hors connexion : emprunts et réservations sont désactivés. Reconnectez-vous pour agir.
+      </div>
     }
-  </tbody>
-</table>
+  } @else {
+    <div class="empty-state app-card">
+      <div class="empty-icon" aria-hidden="true">🔎</div>
+      <p>Aucun livre ne correspond à votre recherche.</p>
+    </div>
+  }
+}

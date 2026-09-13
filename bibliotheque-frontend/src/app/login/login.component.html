@@ -1,14 +1,36 @@
-<div class="container col-md-6 offset-mid-3">
-<form autocomplete="off" #loginForm="ngForm" (ngSubmit)="login(loginForm)">
+<div class="app-card auth-card">
+  <h3 class="mb-1">{{ 'Sign in' | t }}</h3>
+  <p class="page-subtitle mb-3">Accédez à votre espace bibliothèque.</p>
+
+  @if (loginError) {
+    <div class="alert alert-danger" role="alert" role="status">{{ loginError }}</div>
+  }
+
+  <form autocomplete="off" #loginForm="ngForm" (ngSubmit)="login(loginForm)">
     <div class="mb-3">
-      <label class="form-label" style="margin-top: 100px;">Nom d'utilisateur</label>
-      <input type="text" name="username" ngModel class="form-control" id="loginUsername" placeholder="Entrez votre nom d'utilisateur">
-      <div id="emailHelp" class="form-text">Nom d'utilisateur fourni par l'administrateur.</div>
+      <label class="form-label" for="loginUsername">{{ 'Username' | t }}</label>
+      <input type="text" name="username" ngModel required class="form-control"
+             id="loginUsername" [placeholder]="'Username' | t">
+      <div class="form-text">{{ 'Username provided by the administrator' | t }}.</div>
     </div>
+
     <div class="mb-3">
-      <label class="form-label">Mot de passe</label>
-      <input type="password" name="password" ngModel class="form-control" id="loginPassword" placeholder="Entrez votre mot de passe">
+      <label class="form-label" for="loginPassword">{{ 'Password' | t }}</label>
+      <input type="password" name="password" ngModel required class="form-control"
+             id="loginPassword" [placeholder]="'Password' | t">
     </div>
-    <input type="submit" value="Connexion" class="btn btn-primary"/>
+
+    <button type="submit" class="btn btn-primary w-100"
+            [disabled]="loginForm.invalid || loading">
+      @if (loading) {
+        <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+      }
+      {{ 'Sign in' | t }}
+    </button>
   </form>
+
+  <p class="text-center mt-3 mb-0 text-muted-2">
+    Pas encore de compte ?
+    <a routerLink="/register">Créer un compte</a>
+  </p>
 </div>

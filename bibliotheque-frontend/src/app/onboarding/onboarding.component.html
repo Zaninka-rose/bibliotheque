@@ -1,0 +1,26 @@
+@if (visible$ | async) {
+  <div class="onboarding-overlay" role="dialog" aria-modal="true" [attr.aria-label]="current.title">
+    <div class="onboarding-card">
+      <button type="button" class="btn btn-sm btn-link text-decoration-none float-end"
+              (click)="finish()">Passer</button>
+
+      <div class="step-icon" aria-hidden="true">{{ current.icon }}</div>
+      <h3>{{ current.title }}</h3>
+      <p>{{ current.text }}</p>
+
+      <div class="onboarding-dots" aria-hidden="true">
+        @for (s of steps; track $index) {
+          <span [class.current]="$index === step"></span>
+        }
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <button type="button" class="btn btn-secondary" (click)="back()"
+                [disabled]="step === 0">Retour</button>
+        <button type="button" class="btn btn-primary" (click)="next()">
+          {{ isLast ? 'C\'est parti !' : 'Suivant' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

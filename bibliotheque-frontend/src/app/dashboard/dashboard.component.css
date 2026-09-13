@@ -1,0 +1,223 @@
+/* ===== KPI principal ===== */
+.dash-kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dash-kpi-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dash-kpi-value {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  line-height: 1.1;
+}
+
+.dash-kpi-icon {
+  font-size: 1.9rem;
+}
+
+.dash-kpi-sub {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.dash-spark {
+  width: 100%;
+  height: 72px;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+/* ===== Titres de section ===== */
+.dash-section-title {
+  font-size: 1.02rem;
+  margin-bottom: 0.9rem;
+}
+
+.dash-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+.dash-link:hover { text-decoration: underline; }
+
+.dash-table-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.data-table-compact thead th {
+  padding: 0.55rem 0.75rem;
+}
+.data-table-compact tbody td {
+  padding: 0.6rem 0.75rem;
+}
+
+/* ===== Tuiles dégradées ===== */
+.dash-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+}
+
+.dash-tile {
+  border-radius: var(--radius);
+  padding: 1.1rem 1.15rem;
+  color: #fff;
+  min-height: 118px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+@media (hover: hover) {
+  .dash-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.dash-tile-bordeaux { background: linear-gradient(135deg, #7c2d3e 0%, #a8415a 100%); }
+.dash-tile-violet   { background: linear-gradient(135deg, #5b3a8f 0%, #8a5cc0 100%); }
+.dash-tile-bleu     { background: linear-gradient(135deg, #1f6f8b 0%, #3f9bbd 100%); }
+.dash-tile-orange   { background: linear-gradient(135deg, #b46a12 0%, #e09a3c 100%); }
+
+.dash-tile-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.92;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dash-tile-value {
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.dash-tile-cta {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  align-self: flex-start;
+  border: none;
+}
+
+a.dash-tile-cta:hover { color: #fff; opacity: 1; background: rgba(255, 255, 255, 0.28); }
+
+/* ===== Fil d'activité ===== */
+.dash-activity {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.dash-activity-item:last-child { border-bottom: none; }
+
+.dash-activity-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.dash-activity-label {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.dash-activity-detail {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+}
+
+.dash-activity-when {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding-top: 0.2rem;
+}
+
+/* ===== Donut SVG ===== */
+.dash-donut {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+  transform: rotate(0deg);
+}
+
+.dash-donut-sm {
+  width: 120px;
+  height: 120px;
+  margin-top: 0.75rem;
+}
+
+.dash-donut-seg {
+  transition: stroke-dasharray 0.4s ease, stroke-dashoffset 0.4s ease;
+}
+
+.dash-donut-center {
+  font-size: 0.55rem;
+  font-weight: 800;
+  fill: var(--text-primary);
+}
+
+/* ===== Légende du donut ===== */
+.dash-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  padding: 0.2rem 0;
+}
+
+.dash-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* ===== Mobile : tuiles pleine largeur, KPI compact ===== */
+@media (max-width: 575.98px) {
+  .dash-kpi-value { font-size: 2rem; }
+  .dash-tile { min-height: 104px; }
+  .dash-tile-value { font-size: 1.7rem; }
+  .dash-donut { width: 126px; height: 126px; }
+}

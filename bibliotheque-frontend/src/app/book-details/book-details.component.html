@@ -1,28 +1,56 @@
-<h2>Historique d'emprunt de {{ book.bookName }}</h2>
-<table class="table table-info table-striped">
-  <thead>
-    <tr>
-      <th> ID Utilisateur </th>
-      <th> Date d'emprunt </th>
-      <th> Date de retour </th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (borrower of borrow; track borrower) {
-      <tr>
-        <td> {{ borrower.userId }} </td>
-        <td> {{ borrower.issueDate }} </td>
-        @if (borrower.returnDate != null) {
-          <div>
-            <td> {{ borrower.returnDate }} </td>
-          </div>
+<div class="d-flex align-items-center gap-2 mb-3">
+  <a routerLink="/books" class="btn btn-secondary btn-sm">← Retour</a>
+</div>
+
+<div class="app-card mb-4">
+  <div class="d-flex flex-wrap align-items-center gap-3">
+    <div class="splash-logo" style="width:64px;height:64px;font-size:1.9rem;border-radius:16px;" aria-hidden="true">📕</div>
+    <div>
+      <h2 class="mb-1">{{ book.bookName }}</h2>
+      <p class="mb-1 text-muted-2">✍️ {{ book.bookAuthor }} · 🏷️ {{ book.bookGenre }}</p>
+      <p class="mb-0">
+        @if (book.noOfCopies > 0) {
+          <span class="statut-badge statut-HONOREE">{{ book.noOfCopies }} copie(s) disponible(s)</span>
+        } @else {
+          <span class="statut-badge statut-EXPIREE">Indisponible</span>
         }
-        @if (borrower.returnDate === null) {
-          <div>
-            <td> Pas encore retourné </td>
-          </div>
+      </p>
+    </div>
+  </div>
+</div>
+
+<h3>Historique d'emprunt</h3>
+
+@if (borrow?.length) {
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>Date d'emprunt</th>
+          <th>Date de retour</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (borrower of borrow; track borrower) {
+          <tr>
+            <td data-label="Utilisateur">{{ borrower.userId }}</td>
+            <td data-label="Emprunté le">{{ borrower.issueDate | date:'dd/MM/yyyy' }}</td>
+            <td data-label="Retourné le">
+              @if (borrower.returnDate != null) {
+                {{ borrower.returnDate | date:'dd/MM/yyyy' }}
+              } @else {
+                <span class="statut-badge statut-EN_ATTENTE">Pas encore retourné</span>
+              }
+            </td>
+          </tr>
         }
-      </tr>
-    }
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <div class="empty-state app-card">
+    <div class="empty-icon" aria-hidden="true">🗂️</div>
+    <p>Aucun emprunt enregistré pour ce livre.</p>
+  </div>
+}

@@ -1,0 +1,8 @@
+.actions-cell {
+  white-space: nowrap;
+}
+
+.actions-cell .btn {
+  margin-right: 0.35rem;
+  margin-bottom: 0.25rem;
+}
