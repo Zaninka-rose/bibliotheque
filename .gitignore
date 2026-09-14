@@ -1,2 +1,5 @@
 # Réglages locaux des outils
 .claude/
+
+# Copie locale imbriquée du projet d'origine (possède son propre .git)
+bibiotheque/
