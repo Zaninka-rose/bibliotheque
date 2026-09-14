@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Users } from '../_model/users';
 import { UsersService } from '../_service/users.service';
 
 @Component({
-  selector: 'app-users-list',
-  templateUrl: './users-list.component.html',
-  styleUrls: ['./users-list.component.css']
+    selector: 'app-users-list',
+    templateUrl: './users-list.component.html',
+    styleUrls: ['./users-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class UsersListComponent implements OnInit {
 

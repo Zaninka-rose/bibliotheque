@@ -1,6 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 import { UserDetailsComponent } from './user-details.component';
+import { BooksService } from '../_service/books.service';
+import { BorrowService } from '../_service/borrow.service';
+import { UsersService } from '../_service/users.service';
 
 describe('UserDetailsComponent', () => {
   let component: UserDetailsComponent;
@@ -8,7 +13,13 @@ describe('UserDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UserDetailsComponent ]
+      declarations: [ UserDetailsComponent ],
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { params: { userId: 1 } } } },
+        { provide: BooksService, useValue: { getBookById: () => of({}) } },
+        { provide: BorrowService, useValue: { getBooksBorrowedByUser: () => of([]) } },
+        { provide: UsersService, useValue: { getUserById: () => of({}) } }
+      ]
     })
     .compileComponents();
 

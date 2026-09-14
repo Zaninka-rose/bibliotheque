@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Books } from '../_model/books';
 import { Borrow } from '../_model/borrow';
@@ -7,9 +7,11 @@ import { BorrowService } from '../_service/borrow.service';
 import { UserAuthService } from '../_service/user-auth.service';
 
 @Component({
-  selector: 'app-return-book',
-  templateUrl: './return-book.component.html',
-  styleUrls: ['./return-book.component.css']
+    selector: 'app-return-book',
+    templateUrl: './return-book.component.html',
+    styleUrls: ['./return-book.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class ReturnBookComponent implements OnInit {
 

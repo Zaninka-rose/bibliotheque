@@ -6,6 +6,7 @@ import com.ibizabroker.bibliotheque.entity.JwtResponse;
 import com.ibizabroker.bibliotheque.entity.Users;
 import com.ibizabroker.bibliotheque.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -29,6 +30,7 @@ public class JwtService implements UserDetailsService {
     private UsersRepository userDao;
 
     @Autowired
+    @Lazy
     private AuthenticationManager authenticationManager;
 
     public JwtResponse createJwtToken(JwtRequest jwtRequest) throws Exception {
